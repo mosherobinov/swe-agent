@@ -1,5 +1,8 @@
 
-# SWE Agent LangGraph
+# SWE Agent with LangGraph - by [LangTalks](https://langtalks.ai)
+
+<img src="./static/cover.png" width="400" alt="Cover">
+
 
 ![Alpha](https://img.shields.io/badge/status-alpha-orange) ![Python](https://img.shields.io/badge/python-3.12+-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
