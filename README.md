@@ -1,3 +1,4 @@
+
 # SWE Agent LangGraph
 
 ![Alpha](https://img.shields.io/badge/status-alpha-orange) ![Python](https://img.shields.io/badge/python-3.12+-blue) ![License](https://img.shields.io/badge/license-MIT-green)
@@ -222,24 +223,14 @@ source .venv/bin/activate
 # Start LangGraph server
 langgraph dev
 
-# Or run specific agents
-langgraph run --graph agent
 ```
 
 4. **Example usage**
-```python
-# Run architect for planning
-result = await swe_architect.ainvoke({
-    "implementation_research_scratchpad": [
-        HumanMessage(content="Add user authentication to the web app")
-    ]
-})
+Input:
+![Input](./static/input.png)
 
-# Execute the plan
-implementation = await swe_developer.ainvoke({
-    "implementation_plan": result["implementation_plan"]
-})
-```
+Output: (browsing the workspace repo git)
+![Output](./static/output.png)
 
 ## 💡 Real Usage Example
 
