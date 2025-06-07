@@ -12,7 +12,7 @@ A sophisticated AI-powered software engineering agent that automates code implem
 
 ![Main Agent](./static/main_agent.png)
 
-![end to end showcase](https://youtu.be/vJNqAgLzOSg)
+[end to end showcase](https://youtu.be/vJNqAgLzOSg)
 
 ## 🚀 Features
 
