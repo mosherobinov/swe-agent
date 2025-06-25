@@ -5,6 +5,9 @@ from pydantic import BaseModel, Field
 from langchain_core.messages import AnyMessage
 from langgraph.graph import add_messages, StateGraph, START, END
 from typing import Annotated, Optional
+from langchain_core.globals import set_verbose
+
+set_verbose(True)
 
 class AgentState(BaseModel):
     implementation_research_scratchpad: Annotated[list[AnyMessage], add_messages]

@@ -1,7 +1,7 @@
 import json
 from typing import List, TypedDict, Optional
 
-from langchain_anthropic import ChatAnthropic
+from langchain_openai import AzureChatOpenAI
 from langchain_core.messages import HumanMessage, AIMessage, AnyMessage
 from langchain_core.output_parsers import JsonOutputParser
 from langgraph.constants import END, START
@@ -16,6 +16,9 @@ from agent.tools.write import get_files_structure
 from helpers.prompts import markdown_to_prompt_template
 from agent.common.entities import ImplementationPlan
 
+from langchain_core.globals import set_debug
+
+set_debug(True)
 
 class ResearchStep(BaseModel):
     reasoning: str = Field(description="The reasoning behind the research step, why research is needed how it going to help the implmentation of the task")
@@ -32,11 +35,22 @@ check_research_prompt = markdown_to_prompt_template("agent/architect/prompts/che
 conduct_research_prompt = markdown_to_prompt_template("agent/architect/prompts/conduct_research_plan_prompt.md")
 extract_implementation_prompt = markdown_to_prompt_template("agent/architect/prompts/extract_implementation_plan.md")
 
+from langchain_core.callbacks.base import BaseCallbackHandler
+
+class SchemaLoggingHandler(BaseCallbackHandler):
+    def on_llm_start(self, serialized, prompts, **kwargs):
+        print("LLM call:")
+        print("Prompt:", prompts)
+        print("Serialized config:", serialized)
+        print("Additional kwargs:", kwargs)  # Includes "functions" schema if present
+
+
 # runnable
-plan_next_step_runnable = plan_next_step_prompt | ChatAnthropic(model="claude-sonnet-4-20250514").with_structured_output(ResearchStep)
-check_research_runnable = check_research_prompt | ChatAnthropic(model="claude-sonnet-4-20250514").with_structured_output(ResearchEvaluation)
-conduct_research_runnable = conduct_research_prompt | ChatAnthropic(model="claude-sonnet-4-20250514").bind_tools(search_tools+codemap_tools)
-extract_implementation_runnable = extract_implementation_prompt | ChatAnthropic(model="claude-sonnet-4-20250514") | JsonOutputParser(pydantic_object=ImplementationPlan)
+plan_next_step_runnable = plan_next_step_prompt | AzureChatOpenAI(azure_deployment="gpt4-vision",api_version="2024-12-01-preview",temperature=0,max_tokens=None,timeout=None,max_retries=2).with_structured_output(ResearchStep)
+#plan_next_step_runnable = plan_next_step_prompt | AzureChatOpenAI(azure_deployment="gpt4-vision",api_version="2024-12-01-preview",temperature=0,max_tokens=None,timeout=None,max_retries=2, callbacks=[SchemaLoggingHandler()]).with_structured_output(ResearchStep)
+check_research_runnable = check_research_prompt | AzureChatOpenAI(azure_deployment="gpt4-vision",api_version="2024-12-01-preview",temperature=0,max_tokens=None,timeout=None,max_retries=2).with_structured_output(ResearchEvaluation)
+conduct_research_runnable = conduct_research_prompt | AzureChatOpenAI(azure_deployment="gpt4-vision",api_version="2024-12-01-preview",temperature=0,max_tokens=None,timeout=None,max_retries=2).bind_tools(search_tools+codemap_tools)
+extract_implementation_runnable = extract_implementation_prompt | AzureChatOpenAI(azure_deployment="gpt4-vision",api_version="2024-12-01-preview",temperature=0,max_tokens=None,timeout=None,max_retries=2) | JsonOutputParser(pydantic_object=ImplementationPlan)
 
 tool_node = ToolNode(codemap_tools+search_tools, messages_key="implementation_research_scratchpad")
 
